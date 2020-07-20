@@ -27,7 +27,6 @@ class Simulation:
         self.population = self.generatePop(r, 15)
 
     def run(self):
-        print("Jet lag ?? AU GOULAG!")
         self.refresh()
         pygame.display.update()
         while True:
