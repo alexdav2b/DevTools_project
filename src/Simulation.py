@@ -1,62 +1,55 @@
-import pygame
-import random as rd
-import time
-import redis
+import random
 
-import Being
+from src import Parcel
 
 
-class Simulation:
-    def __init__(self):
-        # create graphic interface
-        pygame.init()
-        self.width = 1400
-        self.height = 700
-        self.display = pygame.display.set_mode((self.width, self.height))
-        pygame.display.set_caption("Natural Selection")
+class Being:
+    def __init__(self, idB, x, y):
+        self.id = idB
+        self.x = x
+        self.y = y
+        self.health = 20
+        self.satiety = 20
+        # generate Genom
+        self.generateADN()
 
-        # generate World
-        self.grid = self.generateLand(self.width, self.height)
+    def eat(self):
+        self.satiety = self.satiety - 10
 
-        # generate population
-        self.population = self.generatePop(r, 15)
+    def survive(self, population):
+        self.satiety -= 10
+        if self.satiety <= 0:
+            self.health -= 10
+        if self.health <= 0:
+            population.pop(population.index(self))
 
-    def run(self):
-        print("Jet lag ?? AU GOULAG!")
-        self.refresh()
-        pygame.display.update()
-        while True:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT or not self.population:
-                    pygame.quit()
-                    return
-                for b in self.population:
-                    b.survive(self.population)
-                self.refresh()
-                pygame.display.update()
-                time.sleep(1)
+    def move(self):
+        # need world and squares
+        position_x = 0
+        position_y = 0
+        if self.health >= 3 and self.satiety >= 10:
+            for i in range(self.x):
+                position_x = random.randint(0, self.x)
+                for j in range(self.y):
+                    position_y = random.randint(0, self.y)
 
-    def generatePop(self, base,  nb):
-        pop = []
-        for i in range(nb):
-            # dependant of world squares
-            x = rd.randint(1, int(self.width / 100))
-            y = rd.randint(1, int(self.height / 100))
-            id = i * 42
-            being = Being.Being(id, x * 100, y * 100)
-            base.set(str(being.id), being.generateADN())
-            pop.append(being)
-        return pop
+    def eating(self):
+        if self.satiety != 0 and self.health >= 5:
+            if Parcel.food == 1:
+                self.health += 1
+                self.satiety += 1
+            elif Parcel.food == 5:
+                self.health += 1
+                self.satiety += 1
+            elif Parcel.food == 10:
+                print("Jackpot")
+                self.health += 10
+                self.satiety += 10
 
-    def refresh(self):
-        beingImg = pygame.image.load("../Graphic/Being.png")
-        beingImg = pygame.transform.scale(beingImg, (100, 100))
-        black = (0, 0, 0)
-        self.display.fill(black)
-        for i in range(int(self.width / 100)):
-            for j in range(int(self.height / 100)):
-                self.display.blit(self.grid[i][j].image, (i * 100, j * 100))
-
-        for b in self.population:
-            self.display.blit(beingImg, (b.x, b.y))
-
+    def generateADN(self, parent1='', parent2=''):
+        if not parent1 and not parent2:
+            return 'ACGT'
+        else:
+            res = ''
+            for ind, n in enumerate(parent1):
+                res = res + parent1[ind] if random.randint(1, 2) == 1 else parent1[ind]
