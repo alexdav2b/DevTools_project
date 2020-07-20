@@ -81,3 +81,8 @@ class Simulation:
         for b in self.population:
             self.display.blit(beingImg, (b.x, b.y))
 
+
+if __name__ == "__main__":
+    print("TDD")
+    test = Simulation()
+    test.run()

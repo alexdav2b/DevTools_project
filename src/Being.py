@@ -53,3 +53,9 @@ class Being:
             res = ''
             for ind, n in enumerate(parent1):
                 res = res + parent1[ind] if random.randint(1, 2) == 1 else parent1[ind]
+            return res
+
+
+if __name__ == "__main__":
+    print("TDD")
+    b = Being(42, 5, 5)
